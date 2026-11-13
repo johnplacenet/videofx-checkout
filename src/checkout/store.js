@@ -47,6 +47,7 @@ export function openStore(dir) {
         email: String(email || "").trim().toLowerCase(),
         machineIdHash: "",
         deviceLabel: "",
+        disabled: false,
         createdAt: new Date().toISOString(),
       };
       licenses.push(record);
@@ -59,9 +60,29 @@ export function openStore(dir) {
         email: record.email || "",
         key: record.key,
         deviceLabel: record.deviceLabel || "",
-        active: Boolean(record.machineIdHash),
+        active: Boolean(record.machineIdHash) && !record.disabled,
+        disabled: Boolean(record.disabled),
         createdAt: record.createdAt,
       }));
+    },
+
+    createCode({ email }) {
+      return this.issueLicense({ sessionId: `manual:${crypto.randomUUID()}`, email });
+    },
+
+    setDisabled({ key, disabled }) {
+      const wanted = normalizeKey(key);
+      if (!wanted) return { ok: false, status: 400, error: "That code was not found." };
+      const licenses = read();
+      const record = licenses.find((item) => item.key === wanted);
+      if (!record) return { ok: false, status: 404, error: "That code was not found." };
+      record.disabled = Boolean(disabled);
+      if (disabled) {
+        record.machineIdHash = "";
+        record.deviceLabel = "";
+      }
+      write(licenses);
+      return { ok: true, message: disabled ? "This code is turned off." : "This code is turned on." };
     },
 
     release({ key }) {
@@ -80,7 +101,7 @@ export function openStore(dir) {
       const wanted = normalizeKey(key);
       const machine = String(machineIdHash || "").trim();
       const record = read().find((item) => item.key === wanted);
-      if (!record || !record.machineIdHash || record.machineIdHash !== machine) {
+      if (!record || record.disabled || !record.machineIdHash || record.machineIdHash !== machine) {
         return { ok: true, active: false };
       }
       return { ok: true, active: true };
@@ -94,6 +115,7 @@ export function openStore(dir) {
       const licenses = read();
       const record = licenses.find((item) => item.key === wanted);
       if (!record) return { ok: false, status: 404, error: "That key was not found." };
+      if (record.disabled) return { ok: false, status: 403, error: "This code is turned off." };
       if (record.machineIdHash && record.machineIdHash !== machine) {
         const where = record.deviceLabel || "another computer";
         return {
@@ -130,8 +152,10 @@ export async function openDatabase(connectionString) {
     email text NOT NULL DEFAULT '',
     machine_id_hash text NOT NULL DEFAULT '',
     device_label text NOT NULL DEFAULT '',
-    created_at timestamptz NOT NULL DEFAULT now()
+    created_at timestamptz NOT NULL DEFAULT now(),
+    disabled boolean NOT NULL DEFAULT false
   )`);
+  await pool.query(`ALTER TABLE licenses ADD COLUMN IF NOT EXISTS disabled boolean NOT NULL DEFAULT false`);
 
   return {
     async issueLicense({ sessionId, email }) {
@@ -155,15 +179,35 @@ export async function openDatabase(connectionString) {
 
     async list() {
       const result = await pool.query(
-        `SELECT email, key, device_label, machine_id_hash, created_at FROM licenses ORDER BY created_at DESC`,
+        `SELECT email, key, device_label, machine_id_hash, disabled, created_at FROM licenses ORDER BY created_at DESC`,
       );
       return result.rows.map((row) => ({
         email: row.email || "",
         key: row.key,
         deviceLabel: row.device_label || "",
-        active: Boolean(row.machine_id_hash),
+        active: Boolean(row.machine_id_hash) && !row.disabled,
+        disabled: Boolean(row.disabled),
         createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at || ""),
       }));
+    },
+
+    async createCode({ email }) {
+      return this.issueLicense({ sessionId: `manual:${crypto.randomUUID()}`, email });
+    },
+
+    async setDisabled({ key, disabled }) {
+      const wanted = normalizeKey(key);
+      if (!wanted) return { ok: false, status: 400, error: "That code was not found." };
+      const result = await pool.query(
+        `UPDATE licenses
+         SET disabled = $2,
+             machine_id_hash = CASE WHEN $2 THEN '' ELSE machine_id_hash END,
+             device_label = CASE WHEN $2 THEN '' ELSE device_label END
+         WHERE key = $1`,
+        [wanted, Boolean(disabled)],
+      );
+      if (result.rowCount === 0) return { ok: false, status: 404, error: "That code was not found." };
+      return { ok: true, message: disabled ? "This code is turned off." : "This code is turned on." };
     },
 
     async release({ key }) {
@@ -181,11 +225,11 @@ export async function openDatabase(connectionString) {
       const wanted = normalizeKey(key);
       const machine = String(machineIdHash || "").trim();
       const result = await pool.query(
-        `SELECT machine_id_hash FROM licenses WHERE key = $1`,
+        `SELECT machine_id_hash, disabled FROM licenses WHERE key = $1`,
         [wanted],
       );
       const row = result.rows[0];
-      return { ok: true, active: Boolean(row && row.machine_id_hash && row.machine_id_hash === machine) };
+      return { ok: true, active: Boolean(row && !row.disabled && row.machine_id_hash && row.machine_id_hash === machine) };
     },
 
     async activate({ key, machineIdHash, deviceLabel }) {
@@ -197,13 +241,14 @@ export async function openDatabase(connectionString) {
       const updated = await pool.query(
         `UPDATE licenses
          SET machine_id_hash = $2, device_label = CASE WHEN $3 = '' THEN device_label ELSE $3 END
-         WHERE key = $1 AND (machine_id_hash = '' OR machine_id_hash = $2)
+         WHERE key = $1 AND disabled = false AND (machine_id_hash = '' OR machine_id_hash = $2)
          RETURNING key`,
         [wanted, machine, label],
       );
       if (updated.rowCount > 0) return { ok: true, active: true, message: "This computer is activated." };
-      const existing = await pool.query(`SELECT device_label FROM licenses WHERE key = $1`, [wanted]);
+      const existing = await pool.query(`SELECT device_label, disabled FROM licenses WHERE key = $1`, [wanted]);
       if (!existing.rows[0]) return { ok: false, status: 404, error: "That key was not found." };
+      if (existing.rows[0].disabled) return { ok: false, status: 403, error: "This code is turned off." };
       const where = existing.rows[0].device_label || "another computer";
       return { ok: false, status: 409, error: `This key is already active on ${where}. It works on one computer only.` };
     },

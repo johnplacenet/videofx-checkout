@@ -100,6 +100,11 @@ function page({ title, body, wide = false, document = "License" }) {
     .steps li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; margin: 0; padding: 12px 0; border-top: 1px solid #e7ebf0; }
     .steps li span { width: 28px; height: 28px; border-radius: 50%; background: #10233f; color: #fff; font-size: 13px; font-weight: 700; line-height: 28px; text-align: center; }
     button { width: 100%; border: 0; background: #10233f; color: #fff; font: 700 16px "Avenir Next", "Segoe UI", sans-serif; padding: 14px 16px; cursor: pointer; }
+    button.small { width: auto; padding: 7px 10px; font-size: 13px; }
+    button.quiet { background: #fff; color: #10233f; border: 1px solid #c5d0dc; }
+    form.inline { display: inline; }
+    .create-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin: 0 0 18px; }
+    .create-row input { margin: 0; }
     button:disabled { opacity: 0.6; cursor: wait; }
     label { display: block; margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #5c6b7a; }
     input { width: 100%; margin: 0 0 16px; padding: 12px; border: 1px solid #d5dde6; font: 700 18px ui-monospace, Menlo, monospace; }
@@ -220,24 +225,44 @@ function movePage(notice) {
   });
 }
 
-function adminPage(licenses) {
+function adminActions(item) {
+  const key = escapeHtml(item.key);
+  const free = item.active
+    ? `<form class="inline" method="post" action="/admin/release"><input type="hidden" name="key" value="${key}"><button class="small quiet" type="submit">Free computer</button></form>`
+    : "";
+  const power = item.disabled
+    ? `<form class="inline" method="post" action="/admin/on"><input type="hidden" name="key" value="${key}"><button class="small" type="submit">Turn on</button></form>`
+    : `<form class="inline" method="post" action="/admin/off"><input type="hidden" name="key" value="${key}"><button class="small quiet" type="submit">Turn off</button></form>`;
+  return `${free} ${power}`;
+}
+
+function adminPage(licenses, notice) {
   const rows = licenses.length
     ? licenses.map((item) => `<tr>
         <td>${escapeHtml(item.email || "No email")}</td>
         <td style="font:700 14px ui-monospace,Menlo,monospace;">${escapeHtml(item.key)}</td>
-        <td>${item.active ? escapeHtml(item.deviceLabel || "In use") : "Available"}</td>
+        <td>${item.disabled ? "Off" : item.active ? escapeHtml(item.deviceLabel || "In use") : "Available"}</td>
         <td>${escapeHtml(String(item.createdAt || "").slice(0, 10))}</td>
+        <td>${adminActions(item)}</td>
       </tr>`).join("")
-    : `<tr><td colspan="4">No buyers yet.</td></tr>`;
+    : `<tr><td colspan="5">No buyers yet.</td></tr>`;
   return page({
     title: "Buyers",
     wide: true,
     document: "Buyers",
     body: `
       <h1>Buyers</h1>
-      <p class="note">VideoFX automator Platform codes.</p>
+      <p class="note">Create a code, free it for another computer, or turn it off.</p>
+      ${notice ? `<p class="save">${escapeHtml(notice)}</p>` : ""}
+      <form class="create-row" method="post" action="/admin/create">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="off" placeholder="buyer@email.com">
+        </div>
+        <button class="small" type="submit">Create code</button>
+      </form>
       <table>
-        <thead><tr><th>Email</th><th>Code</th><th>Computer</th><th>Bought</th></tr></thead>
+        <thead><tr><th>Email</th><th>Code</th><th>Computer</th><th>Bought</th><th></th></tr></thead>
         <tbody>${rows}</tbody>
       </table>`,
   });
@@ -381,7 +406,22 @@ const server = http.createServer(async (request, response) => {
     }
     if (url.pathname === "/admin" && request.method === "GET") {
       if (!adminAuthed(request)) return sendHtml(response, 200, loginPage(false));
-      return sendHtml(response, 200, adminPage(await store.list()));
+      return sendHtml(response, 200, adminPage(await store.list(), url.searchParams.get("notice") || ""));
+    }
+    if (request.method === "POST" && ["/admin/create", "/admin/release", "/admin/off", "/admin/on"].includes(url.pathname)) {
+      if (!adminAuthed(request)) return sendHtml(response, 401, loginPage(true));
+      const body = new URLSearchParams((await readRaw(request)).toString("utf8"));
+      let result;
+      if (url.pathname === "/admin/create") {
+        const record = await store.createCode({ email: body.get("email") || "" });
+        result = { message: `Created ${record.key}` };
+      } else if (url.pathname === "/admin/release") {
+        result = await store.release({ key: body.get("key") });
+      } else {
+        result = await store.setDisabled({ key: body.get("key"), disabled: url.pathname === "/admin/off" });
+      }
+      const notice = result.message || result.error || "Saved.";
+      return sendHtml(response, 303, "", { location: `/admin?notice=${encodeURIComponent(notice)}` });
     }
     if (url.pathname === "/admin/login" && request.method === "POST") {
       const body = new URLSearchParams((await readRaw(request)).toString("utf8"));
