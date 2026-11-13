@@ -1,0 +1,31 @@
+databases:
+  - name: videofx-licenses
+    databaseName: videofx_licenses
+    user: videofx_licenses_user
+    plan: 0.1c-256mb
+    region: ohio
+    postgresMajorVersion: "16"
+    diskSizeGB: 1
+
+services:
+  - type: web
+    name: videofx-checkout
+    runtime: node
+    plan: starter
+    region: ohio
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    domains:
+      - videofx.thecre8iveplace.com
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: videofx-licenses
+          property: connectionString
+      - key: NODE_VERSION
+        value: "22"
+      - key: CHECKOUT_PUBLIC
+        value: "1"
+      - key: ADMIN_PASSWORD
+        sync: false
