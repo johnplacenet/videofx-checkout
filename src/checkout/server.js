@@ -151,45 +151,259 @@ function page({ title, body, wide = false, document = "License" }) {
 function homePage(canceled, test) {
   const price = test ? "$1" : "$50";
   const endpoint = test ? "/api/checkout?test=1" : "/api/checkout";
-  return page({
-    title: "VideoFX automator Platform",
-    document: "Purchase",
-    wide: true,
-    body: `
-      <h1>VideoFX automator Platform</h1>
-      <div class="machine">
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VideoFX automator Platform</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font: 16px/1.55 "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #142033; background: #f7f4ee; }
+    a { color: inherit; }
+    img { max-width: 100%; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .top { position: sticky; top: 0; z-index: 5; background: #0e1c33; color: #fff; }
+    .top-inner { display: flex; align-items: center; gap: 22px; min-height: 74px; }
+    .brand { text-decoration: none; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+    .brand span { display: block; margin-top: 3px; font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; color: #f4efe4; }
+    nav { display: flex; gap: 18px; margin-left: auto; font-size: 14px; }
+    nav a { color: #f4efe4; text-decoration: none; }
+    .buy { text-decoration: none; background: #c6a15b; color: #142033; font-weight: 700; padding: 10px 16px; border-radius: 999px; }
+    .hero { background: linear-gradient(180deg, #0e1c33 0%, #16304f 100%); color: #fff; padding: 54px 0 64px; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 36px; align-items: center; }
+    h1 { margin: 0 0 14px; font-size: 46px; line-height: 1.08; letter-spacing: -0.03em; }
+    .hero p { margin: 0 0 22px; color: #e7e1d4; font-size: 18px; }
+    .hero a { color: #e8d7b0; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    button.pay, a.ghost { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 18px; border-radius: 8px; font: 700 16px "Avenir Next", "Segoe UI", sans-serif; text-decoration: none; cursor: pointer; }
+    button.pay { border: 0; background: #c6a15b; color: #142033; }
+    button.pay.wide { width: 100%; }
+    button.pay:disabled { opacity: 0.65; cursor: wait; }
+    a.ghost { border: 1px solid #d9c79a; color: #fff; }
+    .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .photos img { width: 100%; height: 280px; object-fit: contain; background: #fff; border-radius: 8px; }
+    section { padding: 64px 0; scroll-margin-top: 86px; }
+    h2 { margin: 0 0 8px; font-size: 34px; letter-spacing: -0.02em; text-align: center; }
+    .rule { width: 72px; height: 3px; margin: 0 auto 28px; background: #c6a15b; }
+    .reasons, .cards, .worth { display: grid; gap: 14px; }
+    .reasons { grid-template-columns: repeat(5, 1fr); }
+    .cards { grid-template-columns: repeat(3, 1fr); }
+    .worth { grid-template-columns: repeat(3, 1fr); }
+    .card, .worth article, .price-card, details { background: #fff; border: 1px solid #e7e1d6; border-radius: 12px; }
+    .card, .worth article { padding: 18px 16px 16px; }
+    .card h3, .worth h3 { margin: 10px 0 6px; font-size: 17px; }
+    .card p, .worth p, .step p { margin: 0; color: #4d5b6a; font-size: 14px; }
+    .mark { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #f8f1e3; color: #9a7433; font-weight: 700; }
+    .band { background: #fff; }
+    .fine { margin: 18px 0 0; color: #5c6b7a; text-align: center; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .split h2, .purchase h2 { text-align: left; }
+    .split .rule, .purchase .rule { margin-left: 0; }
+    .only { padding: 16px 18px; background: #f8f1e3; border-left: 4px solid #c6a15b; border-radius: 8px; }
+    .only strong { display: block; }
+    .steps { display: grid; gap: 16px; }
+    .step { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: start; }
+    .step .mark { background: #0e1c33; color: #f4efe4; }
+    .app-shot { margin: 0; }
+    .app-shot img { width: 100%; height: auto; display: block; border: 1px solid #e7e1d6; border-radius: 12px; background: #fff; }
+    .app-shot figcaption { margin-top: 10px; color: #5c6b7a; text-align: center; }
+    .purchase-grid { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 22px; align-items: start; }
+    .price-card { padding: 22px; }
+    .price { margin: 8px 0; font-size: 56px; font-weight: 700; letter-spacing: -0.04em; }
+    .price-card p { margin: 0 0 14px; color: #4d5b6a; }
+    details { padding: 0 16px; margin: 0 0 10px; }
+    summary { cursor: pointer; padding: 14px 0; font-weight: 700; }
+    details p { margin: 0 0 14px; color: #4d5b6a; }
+    .error { color: #9b2c2c; }
+    .foot { background: #0e1c33; color: #fff; padding: 28px 0; }
+    .foot-inner { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+    .foot p { margin: 0; }
+    .foot strong { color: #e8d7b0; }
+    @media (max-width: 980px) {
+      h1 { font-size: 36px; }
+      .reasons { grid-template-columns: 1fr 1fr; }
+      .cards { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 760px) {
+      h1 { font-size: 32px; }
+      nav { display: none; }
+      .buy { margin-left: auto; }
+      .hero-grid, .split, .purchase-grid, .reasons, .cards, .worth { grid-template-columns: 1fr; }
+      .photos img { height: auto; }
+      .foot-inner { align-items: flex-start; flex-direction: column; }
+      h2, .split h2 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="brand" href="/">The Creative Place LLC<span>VideoFX automator Platform</span></a>
+      <nav>
+        <a href="#why">Why</a>
+        <a href="#features">What it does</a>
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+        <a href="#purchase">Purchase</a>
+      </nav>
+      <a class="buy" href="#purchase">Buy now</a>
+    </div>
+  </header>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Update your Snappic GlamBot templates without clicking through every one.</h1>
+        <p>This is for someone who already owns a GlamBot from <a href="https://getglambot.com">getglambot.com</a> and already has the Snappic templates designed for GetGlamBot. The app opens those templates and puts your files on each one.</p>
+        <div class="hero-actions">
+          <button class="pay" type="button">Get access for ${price}</button>
+          <a class="ghost" href="#how">See how it works</a>
+        </div>
+      </div>
+      <div class="photos">
         <img src="/photos/glambot-machine.png" alt="The GlamBot camera arm from GetGlamBot">
         <img src="/photos/glambot-in-use.png" alt="A person operating a GlamBot camera arm">
       </div>
-      <p class="only"><strong>Only for a GetGlamBot owner.</strong> This is only for someone who owns a GlamBot from <a href="https://getglambot.com">getglambot.com</a> and already has the Snappic templates designed for GetGlamBot. This is that machine.</p>
+    </div>
+  </section>
+  <section id="why">
+    <div class="wrap">
+      <h2>Why you need this</h2>
+      <div class="rule"></div>
+      <div class="reasons">
+        <article class="card"><div class="mark">1</div><h3>Eighteen templates, by hand</h3><p>Paparazzi and Slo Mo Only each run from 10 seconds down to 2. Opening all 18 and repeating the same clicks is the slow part.</p></article>
+        <article class="card"><div class="mark">2</div><h3>One overlay, every template</h3><p>Choose the overlay once. The app puts that file on every template you leave checked.</p></article>
+        <article class="card"><div class="mark">3</div><h3>The same files on both sets</h3><p>Paparazzi and Slo Mo Only stay in step. Uncheck a group when you want to leave it alone.</p></article>
+        <article class="card"><div class="mark">4</div><h3>A miss does not restart the job</h3><p>If a template is missing something, the app stops, tells you why, and you click a number that is not done to continue.</p></article>
+        <article class="card"><div class="mark">5</div><h3>Ready before the event</h3><p>The repetitive part of the video templates is done before guests arrive, instead of between bookings.</p></article>
+      </div>
+    </div>
+  </section>
+  <section id="features" class="band">
+    <div class="wrap">
+      <h2>What it updates</h2>
+      <div class="rule"></div>
+      <div class="cards">
+        <article class="card"><div class="mark">1</div><h3>Each template opens for you</h3><p>It walks Paparazzi and Slo Mo Only, from 10 seconds through 2 seconds.</p></article>
+        <article class="card"><div class="mark">2</div><h3>Overlay</h3><p>Your PNG, APNG, or MP4, under 30 MB, replaces the overlay on each checked template.</p></article>
+        <article class="card"><div class="mark">3</div><h3>Overlay mask</h3><p>Turn this on only when you have a mask file. Otherwise that setting stays as it is.</p></article>
+        <article class="card"><div class="mark">4</div><h3>Soundtrack and preview</h3><p>Add an MP3 or M4A soundtrack, or a short preview video, when you want those changed.</p></article>
+        <article class="card"><div class="mark">5</div><h3>Resolution</h3><p>Square, landscape, or portrait, only if you check Resolution and pick a size. Leave it off and the size stays.</p></article>
+        <article class="card"><div class="mark">6</div><h3>Timeline start and end</h3><p>If a template already has an uploaded video at the beginning, the end, or both, your file goes in that spot. Recorded clips stay. It does not create a new clip.</p></article>
+      </div>
+      <p class="fine">Anything you leave unchecked is left alone. This updates the video templates. Event details, options, sharing, effects, and the app experience stay in Snappic, where you set them.</p>
+    </div>
+  </section>
+  <section id="how">
+    <div class="wrap split">
+      <div>
+        <h2>Who it is for</h2>
+        <div class="rule"></div>
+        <p class="only"><strong>Only for a GetGlamBot owner.</strong> This is only for someone who owns a GlamBot from <a href="https://getglambot.com">getglambot.com</a> and already has the Snappic templates designed for GetGlamBot. The photos above are that machine.</p>
+        <p>You sign in to Snappic yourself. The app never types your password. It then works on the event you point it at.</p>
+      </div>
+      <div>
+        <h2>How it works</h2>
+        <div class="rule"></div>
+        <div class="steps">
+          <div class="step"><div class="mark">1</div><p><strong>Open your event.</strong> Log in to Snappic, then use the event that is already open or type its ID.</p></div>
+          <div class="step"><div class="mark">2</div><p><strong>Choose the files.</strong> Overlay, and any soundtrack, mask, preview, resolution, or timeline videos you actually want changed.</p></div>
+          <div class="step"><div class="mark">3</div><p><strong>Update, then save.</strong> The app opens each checked template. When you leave “Save changes” on, it saves the template list at the end so the work stays on the event.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="band">
+    <div class="wrap">
+      <h2>This is the app</h2>
+      <div class="rule"></div>
       <figure class="app-shot">
-        <img src="/photos/app.png" alt="The VideoFX automator app, with the template list, overlay, and timeline">
-        <p class="note">This is the app you are buying. It updates the Snappic templates on that GlamBot.</p>
+        <img src="/photos/app.png" alt="The VideoFX automator, showing the template list, overlay, soundtrack, and timeline">
+        <figcaption>You run this on the Mac or Windows computer at the booth. Google Chrome has to be on that computer. After you pay, the download is on the same page as your code.</figcaption>
       </figure>
-      <p class="price">${price}</p>
-      <p>One computer. The activation key cannot be shared.</p>
-      <p class="note">${test ? "Test charge. The real price stays $50." : "Pay with card. The next page shows your code. Take a photo or a screenshot so you can save it."}</p>
-      ${canceled ? `<p class="error">Payment was canceled. Nothing was charged.</p>` : ""}
-      <p class="error" id="error" hidden></p>
-      <button id="pay" type="button">Pay ${price}</button>
-      <script>
-        document.querySelector("#pay").addEventListener("click", async () => {
-          const button = document.querySelector("#pay");
-          const error = document.querySelector("#error");
-          button.disabled = true;
-          error.hidden = true;
-          const response = await fetch(${JSON.stringify(endpoint)}, { method: "POST" });
-          const body = await response.json();
-          if (!body.url) {
-            error.textContent = body.error || "The payment page could not be opened.";
-            error.hidden = false;
-            button.disabled = false;
-            return;
-          }
-          location.href = body.url;
-        });
-      </script>`,
-  });
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <h2>Why it is worth ${price}</h2>
+      <div class="rule"></div>
+      <div class="worth">
+        <article><div class="mark">1</div><h3>The clicking is done for you</h3><p>One pass covers the templates you leave checked, instead of opening all 18 yourself.</p></article>
+        <article><div class="mark">2</div><h3>The same files everywhere</h3><p>Every checked template gets the overlay, soundtrack, mask, size, and timeline files you chose.</p></article>
+        <article><div class="mark">3</div><h3>You can see a miss</h3><p>A failed template names the problem. You continue from a later number without starting over.</p></article>
+      </div>
+    </div>
+  </section>
+  <section id="purchase" class="band">
+    <div class="wrap purchase-grid">
+      <div class="price-card">
+        <h2>Get the VideoFX automator Platform</h2>
+        <p class="price">${price}</p>
+        <p>One computer. One-time purchase from The Creative Place LLC. The activation key cannot be shared. You can free it when you move to another computer.</p>
+        <p>${test ? "Test charge. The real price stays $50." : "Pay with card. The next page shows your code. Take a photo or a screenshot so you can save it."}</p>
+        ${canceled ? `<p class="error">Payment was canceled. Nothing was charged.</p>` : ""}
+        <p class="error" id="error" hidden></p>
+        <button class="pay wide" type="button">Pay ${price}</button>
+      </div>
+      <div id="faq">
+        <h2>FAQ</h2>
+        <div class="rule"></div>
+        <details open>
+          <summary>Do I need a GetGlamBot and the Snappic templates?</summary>
+          <p>Yes. This is only for a GlamBot from getglambot.com, and only if you already have the Snappic templates designed for GetGlamBot.</p>
+        </details>
+        <details>
+          <summary>Is this a subscription?</summary>
+          <p>No. It is a one-time ${test ? "$1 test charge. The real price stays $50." : "$50 purchase"}.</p>
+        </details>
+        <details>
+          <summary>Can I use my own files?</summary>
+          <p>Yes. You choose the overlay, soundtrack, preview, overlay mask, and timeline videos from your computer.</p>
+        </details>
+        <details>
+          <summary>Can I share the activation key?</summary>
+          <p>No. One computer only. Free the code before you activate a different computer.</p>
+        </details>
+        <details>
+          <summary>Does it run on Mac and Windows?</summary>
+          <p>Yes. The Mac and Windows downloads are on the page with your code. That computer needs Google Chrome.</p>
+        </details>
+        <details>
+          <summary>Does it change the rest of the Snappic event?</summary>
+          <p>No. It updates the video templates. Event details, options, sharing, effects, and the app experience stay as you set them.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <p><strong>Stop opening every template by hand.</strong><br>Let the VideoFX automator do that part for the GetGlamBot templates you already have.</p>
+      <button class="pay" type="button">Get access for ${price}</button>
+    </div>
+  </footer>
+  <script>
+    document.querySelectorAll(".pay").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const buttons = document.querySelectorAll(".pay");
+        const error = document.querySelector("#error");
+        buttons.forEach((item) => { item.disabled = true; });
+        error.hidden = true;
+        const response = await fetch(${JSON.stringify(endpoint)}, { method: "POST" });
+        const body = await response.json();
+        if (!body.url) {
+          error.textContent = body.error || "The payment page could not be opened.";
+          error.hidden = false;
+          buttons.forEach((item) => { item.disabled = false; });
+          document.querySelector("#purchase").scrollIntoView();
+          return;
+        }
+        location.href = body.url;
+      });
+    });
+  </script>
+</body>
+</html>`;
 }
 
 function successPage(record, preview) {
