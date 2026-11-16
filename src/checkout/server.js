@@ -254,8 +254,9 @@ function homePage(canceled, test) {
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <h1>Update your Snappic GlamBot templates without clicking through every one.</h1>
-        <p>This is for someone who already owns a GlamBot from <a href="https://getglambot.com">getglambot.com</a> and already has the Snappic templates designed for GetGlamBot. The app opens those templates and puts your files on each one.</p>
+        <h1>One small change means opening all 18 templates by hand.</h1>
+        <p>A revised overlay. New music. A new start video. A new end video. Each time, you go into Paparazzi and Slo Mo Only, from 10 seconds down to 2, and make that same change again. Upload each file once. The app goes into every template and changes it for you.</p>
+        <p>This is only for someone who already owns a GlamBot from <a href="https://getglambot.com">getglambot.com</a> and already has the Snappic templates designed for GetGlamBot.</p>
         <div class="hero-actions">
           <button class="pay" type="button">Get access for ${price}</button>
           <a class="ghost" href="#how">See how it works</a>
@@ -269,14 +270,14 @@ function homePage(canceled, test) {
   </section>
   <section id="why">
     <div class="wrap">
-      <h2>Why you need this</h2>
+      <h2>The tedious part</h2>
       <div class="rule"></div>
       <div class="reasons">
-        <article class="card"><div class="mark">1</div><h3>Eighteen templates, by hand</h3><p>Paparazzi and Slo Mo Only each run from 10 seconds down to 2. Opening all 18 and repeating the same clicks is the slow part.</p></article>
-        <article class="card"><div class="mark">2</div><h3>One overlay, every template</h3><p>Choose the overlay once. The app puts that file on every template you leave checked.</p></article>
-        <article class="card"><div class="mark">3</div><h3>The same files on both sets</h3><p>Paparazzi and Slo Mo Only stay in step. Uncheck a group when you want to leave it alone.</p></article>
-        <article class="card"><div class="mark">4</div><h3>A miss does not restart the job</h3><p>If a template is missing something, the app stops, tells you why, and you click a number that is not done to continue.</p></article>
-        <article class="card"><div class="mark">5</div><h3>Ready before the event</h3><p>The repetitive part of the video templates is done before guests arrive, instead of between bookings.</p></article>
+        <article class="card"><div class="mark">1</div><h3>One revision, 18 times</h3><p>Change the overlay and you still open every template. Same for a new soundtrack, a new start video, or a new end video.</p></article>
+        <article class="card"><div class="mark">2</div><h3>The same clicks, again</h3><p>Paparazzi and Slo Mo Only, 10 seconds down to 2. A minor change is a long pass through all of them.</p></article>
+        <article class="card"><div class="mark">3</div><h3>Upload each file once</h3><p>Choose the overlay, the music, the start video, and the end video. You do not open the templates yourself.</p></article>
+        <article class="card"><div class="mark">4</div><h3>Every template is changed</h3><p>The app goes in and puts those files on each template you leave checked.</p></article>
+        <article class="card"><div class="mark">5</div><h3>Only the things you changed</h3><p>Leave a box unchecked and that part stays as it is. A new song does not have to touch the overlay.</p></article>
       </div>
     </div>
   </section>
@@ -308,8 +309,8 @@ function homePage(canceled, test) {
         <div class="rule"></div>
         <div class="steps">
           <div class="step"><div class="mark">1</div><p><strong>Open your event.</strong> Log in to Snappic, then use the event that is already open or type its ID.</p></div>
-          <div class="step"><div class="mark">2</div><p><strong>Choose the files.</strong> Overlay, and any soundtrack, mask, preview, resolution, or timeline videos you actually want changed.</p></div>
-          <div class="step"><div class="mark">3</div><p><strong>Update, then save.</strong> The app opens each checked template. When you leave “Save changes” on, it saves the template list at the end so the work stays on the event.</p></div>
+          <div class="step"><div class="mark">2</div><p><strong>Upload the files once.</strong> The revised overlay, the new soundtrack, the new start video, the new end video. One file for each thing that changed.</p></div>
+          <div class="step"><div class="mark">3</div><p><strong>It changes every template.</strong> The app opens each one you left checked and makes those changes. When “Save changes” is on, it saves the list so the work stays on the event.</p></div>
         </div>
       </div>
     </div>
@@ -329,8 +330,8 @@ function homePage(canceled, test) {
       <h2>Why it is worth ${price}</h2>
       <div class="rule"></div>
       <div class="worth">
-        <article><div class="mark">1</div><h3>The clicking is done for you</h3><p>One pass covers the templates you leave checked, instead of opening all 18 yourself.</p></article>
-        <article><div class="mark">2</div><h3>The same files everywhere</h3><p>Every checked template gets the overlay, soundtrack, mask, size, and timeline files you chose.</p></article>
+        <article><div class="mark">1</div><h3>A small change stays small</h3><p>You upload the new file. You do not repeat that change across all 18 templates.</p></article>
+        <article><div class="mark">2</div><h3>The same file everywhere</h3><p>The overlay, soundtrack, start video, or end video you uploaded is what goes on every checked template.</p></article>
         <article><div class="mark">3</div><h3>You can see a miss</h3><p>A failed template names the problem. You continue from a later number without starting over.</p></article>
       </div>
     </div>
@@ -359,7 +360,7 @@ function homePage(canceled, test) {
         </details>
         <details>
           <summary>Can I use my own files?</summary>
-          <p>Yes. You choose the overlay, soundtrack, preview, overlay mask, and timeline videos from your computer.</p>
+          <p>Yes. Upload the overlay, the soundtrack, the start video, or the end video from your computer. The app puts each one on every template you leave checked.</p>
         </details>
         <details>
           <summary>Can I share the activation key?</summary>
@@ -378,7 +379,7 @@ function homePage(canceled, test) {
   </section>
   <footer class="foot">
     <div class="wrap foot-inner">
-      <p><strong>Stop opening every template by hand.</strong><br>Let the VideoFX automator do that part for the GetGlamBot templates you already have.</p>
+      <p><strong>Stop opening all 18 templates for one small change.</strong><br>Upload the files once. The app changes every template.</p>
       <button class="pay" type="button">Get access for ${price}</button>
     </div>
   </footer>
@@ -598,7 +599,7 @@ async function createCheckout(request) {
           name: "VideoFX automator Platform",
           description: test
             ? "Test purchase from The Creative Place LLC. One computer."
-            : "Only for a GetGlamBot owner who already has the Snappic GetGlamBot templates. Sold by The Creative Place LLC. One computer. The code cannot be shared.",
+            : "Upload the overlay, soundtrack, or start and end video once. It changes all 18 GetGlamBot templates. One computer. The code cannot be shared.",
         },
       },
     }],
