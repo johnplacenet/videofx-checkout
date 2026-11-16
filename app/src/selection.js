@@ -20,15 +20,31 @@ export function normalizeSelection(input) {
   for (const id of requested) {
     if (MASTER_IDS.has(id) && !master.includes(id)) master.push(id);
   }
-  const position = input?.timeline?.position === "start" ? "start" : "end";
-  const timeline = { on: Boolean(input?.timeline?.on), position };
-  return { master, timeline };
+  return { master, timeline: timelineChoice(input) };
+}
+
+function timelineChoice(input) {
+  const timeline = input?.timeline || {};
+  if (typeof timeline.start === "boolean" || typeof timeline.end === "boolean") {
+    return { start: Boolean(timeline.start), end: Boolean(timeline.end) };
+  }
+  if (timeline.on) {
+    return timeline.position === "start" ? { start: true, end: false } : { start: false, end: true };
+  }
+  return { start: false, end: false };
+}
+
+function timelineFile(input, chosen, position) {
+  const specific = position === "start" ? input.files?.timelineStart : input.files?.timelineEnd;
+  if (specific) return specific;
+  const onlyOne = chosen.start !== chosen.end;
+  return onlyOne ? input.files?.timelineVideo || "" : "";
 }
 
 export function selectionPlan(input = {}) {
   const chosen = normalizeSelection(input);
   const labels = new Map(MASTER_FIELDS.map((field) => [field.id, field.label]));
-  if (!chosen.master.length && !chosen.timeline.on) {
+  if (!chosen.master.length && !chosen.timeline.start && !chosen.timeline.end) {
     return { ok: false, error: "Choose Overlay, Soundtrack, or the Timeline uploaded video. No templates were changed." };
   }
   const missing = [];
@@ -41,7 +57,8 @@ export function selectionPlan(input = {}) {
     const sizes = RESOLUTIONS[resolution?.aspect] || [];
     if (!sizes.includes(resolution?.size)) missing.push("a Square, Landscape, or Portrait size");
   }
-  if (chosen.timeline.on && !input.files?.timelineVideo) missing.push("the Timeline video");
+  if (chosen.timeline.start && !timelineFile(input, chosen.timeline, "start")) missing.push("the Start video");
+  if (chosen.timeline.end && !timelineFile(input, chosen.timeline, "end")) missing.push("the End video");
   if (missing.length) {
     return {
       ok: false,
@@ -57,8 +74,9 @@ export function selectionPlan(input = {}) {
   const masterSummary = chosen.master.length
     ? `Master Settings: ${changing}. Leaving ${left}.`
     : "Master Settings stay as they are.";
-  const timelineSummary = chosen.timeline.on
-    ? `Timeline: replace the Uploaded Video at the ${chosen.timeline.position}.`
+  const places = [chosen.timeline.start ? "start" : "", chosen.timeline.end ? "end" : ""].filter(Boolean);
+  const timelineSummary = places.length
+    ? `Timeline: replace the Uploaded Video at the ${places.join(" and the ")}.`
     : "The Timeline tab stays unchanged.";
   return {
     ok: true,

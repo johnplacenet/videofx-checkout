@@ -30,7 +30,7 @@ export function startJob(options = {}) {
   state.cancelRequested = false;
   state.awaitingApproval = false;
   if (options.mode === "update-all") {
-    state.startedAt = Date.now();
+    if (!options.resumeFrom || !state.startedAt) state.startedAt = Date.now();
     state.finishedAt = null;
   }
   setMessage("Starting.");
@@ -62,12 +62,13 @@ export async function runJob(options = {}) {
   if (options.overlayPath) files.overlay = options.overlayPath;
   const resolution = options.resolution || options.selection?.resolution || null;
   const plan = selectionPlan({ ...(options.selection || {}), files, resolution });
-  resetTemplates();
+  const resumeFrom = resumeTemplateName(options.resumeFrom);
+  if (!resumeFrom) resetTemplates();
   state.mode = mode;
   state.lastResult = null;
   if (mode !== "dry-run") state.eventSave = "idle";
   state.progress.current = "";
-  logLine(`Job started: ${mode}. ${plan.ok ? plan.summary : "No changes yet."}`);
+  logLine(`Job started: ${mode}${resumeFrom ? ` from ${resumeFrom}` : ""}. ${plan.ok ? plan.summary : "No changes yet."}`);
 
   if (mode !== "dry-run") {
     if (!plan.ok) throw new Error(plan.error);
@@ -116,7 +117,16 @@ export async function runJob(options = {}) {
     return result;
   }
 
-  const queue = mode === "update-all" ? selected : [requiredSingleTemplate(options.template)];
+  let queue = mode === "update-all" ? selected : [requiredSingleTemplate(options.template)];
+  if (resumeFrom) {
+    const startAt = queue.findIndex((template) => template.name === resumeFrom);
+    if (startAt < 0) throw new Error("That template is not in the groups you have checked.");
+    queue = queue.slice(startAt).filter((template) => {
+      const current = state.templates.find((item) => item.name === template.name);
+      return current?.status !== "saved";
+    });
+    if (!queue.length) throw new Error("Those templates are already done.");
+  }
   for (const [index, template] of queue.entries()) {
     if (state.cancelRequested) {
       markEventSaveNeeded();
@@ -124,7 +134,7 @@ export async function runJob(options = {}) {
     }
     const match = found.find((item) => namesMatch(item.name, template.name));
     state.progress.current = template.name;
-    setMessage(`Updating ${index + 1} / ${queue.length} — ${template.name}`);
+    setMessage(`${resumeFrom ? "Continuing" : "Updating"} ${index + 1} / ${queue.length} — ${template.name}`);
     setTemplate(template.name, "running", "Opening the template");
     try {
       await updateTemplateOverlay(page, { ...template, raw: match.raw }, files.overlay, {
@@ -193,6 +203,13 @@ function markEventSaveNeeded() {
   if (state.eventSave === "saved") return;
   if (!state.templates.some((template) => template.status === "saved")) return;
   state.eventSave = "needed";
+}
+
+function resumeTemplateName(name) {
+  if (!name) return "";
+  const template = findTemplate(name);
+  if (!template) throw new Error("That template is not in this run.");
+  return template.name;
 }
 
 function requiredSingleTemplate(name) {

@@ -54,7 +54,8 @@
       <section class="panel">
         <h2>Templates</h2>
         <div id="templates"></div>
-        <p class="meta">Uncheck a group to leave it alone.</p>
+        <p id="template-note" class="meta">Uncheck a group to leave it alone.</p>
+        <p id="fail-notice" class="fail-notice" hidden></p>
       </section>
       <section class="panel choices">
         <h2>Master Settings</h2>
@@ -98,17 +99,19 @@
       </section>
       <section class="panel timeline-card">
         <h2>Timeline</h2>
-        <div class="choice-block" data-choice="timelineVideo">
-          <label class="check"><input type="checkbox" data-page="timeline" value="timelineVideo"> Uploaded Video</label>
-          <button class="file-pick" type="button" data-choose="timelineVideo">Choose file</button>
-          <span data-chosen="timelineVideo"></span>
+        <p class="meta">If a template already has an uploaded video at the beginning or the end, the file you choose is put in that spot automatically. Check Start, End, or both. Each spot uses its own video. Recorded clips stay as they are.</p>
+        <div class="choice-block" data-choice="timelineStart">
+          <label class="check"><input type="checkbox" data-page="timeline" value="start"> Start</label>
+          <button class="file-pick" type="button" data-choose="timelineStart">Choose file</button>
+          <span data-chosen="timelineStart"></span>
           <p class="file-note">.mp4 less than 30MiB</p>
-          <div class="timeline-where">
-            <label><input type="radio" name="timeline-position" value="end" checked> End</label>
-            <label><input type="radio" name="timeline-position" value="start"> Start</label>
-          </div>
         </div>
-        <p class="meta">Replaces the end or the start clip. Recorded clips stay as they are.</p>
+        <div class="choice-block" data-choice="timelineEnd">
+          <label class="check"><input type="checkbox" data-page="timeline" value="end"> End</label>
+          <button class="file-pick" type="button" data-choose="timelineEnd">Choose file</button>
+          <span data-chosen="timelineEnd"></span>
+          <p class="file-note">.mp4 less than 30MiB</p>
+        </div>
       </section>
     </section>
 

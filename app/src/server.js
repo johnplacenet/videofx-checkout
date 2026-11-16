@@ -21,6 +21,8 @@ const choosePrompts = {
   soundtrack: "Choose the Soundtrack",
   overlayMask: "Choose the Overlay Mask",
   timelineVideo: "Choose the Timeline uploaded video",
+  timelineStart: "Choose the Timeline video for the start",
+  timelineEnd: "Choose the Timeline video for the end",
 };
 function rememberChosen() {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -56,6 +58,10 @@ function restoreChosenFiles() {
     const stat = fs.statSync(matches[0]);
     chosenFiles[kind] = { path: matches[0], name: path.basename(matches[0]), size: stat.size };
   }
+  if (chosenFiles.timelineVideo && !chosenFiles.timelineEnd) {
+    chosenFiles.timelineEnd = { ...chosenFiles.timelineVideo };
+    rememberChosen();
+  }
 }
 function publicChosen() {
   return Object.fromEntries(Object.entries(chosenFiles).map(([kind, item]) => [kind, { name: item.name, path: item.path }]));
@@ -66,6 +72,8 @@ const fileKinds = {
   soundtrack: [".mp3", ".m4a"],
   overlayMask: [".png", ".apng", ".jpg", ".jpeg", ".mp4"],
   timelineVideo: [".mp4"],
+  timelineStart: [".mp4"],
+  timelineEnd: [".mp4"],
 };
 const fileLimits = {
   overlay: 30 * 1024 * 1024,
@@ -73,11 +81,13 @@ const fileLimits = {
   soundtrack: 5 * 1024 * 1024,
   overlayMask: 10 * 1024 * 1024,
   timelineVideo: 30 * 1024 * 1024,
+  timelineStart: 30 * 1024 * 1024,
+  timelineEnd: 30 * 1024 * 1024,
 };
 function fileTooLarge(kind, size) {
   const limit = fileLimits[kind];
   if (!limit || size < limit) return "";
-  const amount = kind === "timelineVideo" ? "30MiB" : `${limit / (1024 * 1024)} MB`;
+  const amount = String(kind).startsWith("timeline") ? "30MiB" : `${limit / (1024 * 1024)} MB`;
   return `That file needs to be less than ${amount}.`;
 }
 restoreChosenFiles();

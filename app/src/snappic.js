@@ -342,9 +342,9 @@ export async function updateTemplateOverlay(page, template, overlayPath, changes
     if (master.includes("soundtrack")) allowed.push("soundtrack");
     assertSettingsUnchanged(before, after, template.name, allowed);
     }
-    if (timeline) {
+    for (const slot of timelineSlots(timeline, changes.files)) {
       stopIfCancelled();
-      await replaceTimelineVideo(page, timeline.position === "start" ? "start" : "end", changes.files?.timelineVideo);
+      await replaceTimelineVideo(page, slot.position, slot.filePath);
     }
     await screenshot(page, `${slug}-uploaded.png`);
     stopIfCancelled();
@@ -491,6 +491,18 @@ async function frameOffset(frame) {
   } catch {
     return { x: 0, y: 0 };
   }
+}
+
+function timelineSlots(timeline, files = {}) {
+  if (!timeline) return [];
+  const slots = [];
+  if (timeline.start) slots.push({ position: "start", filePath: files.timelineStart || (!timeline.end ? files.timelineVideo : "") });
+  if (timeline.end) slots.push({ position: "end", filePath: files.timelineEnd || (!timeline.start ? files.timelineVideo : "") });
+  if (!slots.length && timeline.on) {
+    const position = timeline.position === "start" ? "start" : "end";
+    slots.push({ position, filePath: files.timelineVideo || "" });
+  }
+  return slots;
 }
 
 async function replaceTimelineVideo(page, position, filePath) {

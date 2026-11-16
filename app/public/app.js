@@ -48,20 +48,22 @@ function selectedResolution() {
   return { aspect, size };
 }
 
-function timelineOn() {
-  return Boolean(document.querySelector("[data-page='timeline']")?.checked);
-}
-
-function timelinePosition() {
-  return document.querySelector("input[name='timeline-position']:checked")?.value === "start" ? "start" : "end";
+function timelineSelection() {
+  return {
+    start: Boolean(document.querySelector("[data-page='timeline'][value='start']")?.checked),
+    end: Boolean(document.querySelector("[data-page='timeline'][value='end']")?.checked),
+  };
 }
 
 function readyToUpdate() {
   const master = selectedMaster();
-  if (!selectedGroups().length || (!master.length && !timelineOn())) return false;
-  for (const id of ["overlay", "preview", "soundtrack", "overlayMask", "timelineVideo"]) {
-    if ((id === "timelineVideo" ? timelineOn() : master.includes(id)) && !chosen[id]) return false;
+  const timeline = timelineSelection();
+  if (!selectedGroups().length || (!master.length && !timeline.start && !timeline.end)) return false;
+  for (const id of ["overlay", "preview", "soundtrack", "overlayMask"]) {
+    if (master.includes(id) && !chosen[id]) return false;
   }
+  if (timeline.start && !chosen.timelineStart) return false;
+  if (timeline.end && !chosen.timelineEnd) return false;
   if (master.includes("resolution") && !selectedResolution()) return false;
   return true;
 }
@@ -117,7 +119,7 @@ for (const button of document.querySelectorAll("[data-choose]")) {
 }
 
 function paintChosen(state) {
-  for (const kind of ["overlay", "preview", "soundtrack", "overlayMask", "timelineVideo"]) {
+  for (const kind of ["overlay", "preview", "soundtrack", "overlayMask", "timelineStart", "timelineEnd"]) {
     const slot = document.querySelector(`[data-chosen='${kind}']`);
     const item = state.chosenFiles?.[kind];
     if (!slot) continue;
@@ -141,17 +143,18 @@ function paintChosen(state) {
   }
 }
 
-async function start(mode) {
+async function start(mode, resumeFrom = "") {
   const response = await fetch("/api/jobs", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       mode,
+      resumeFrom,
       groups: selectedGroups(),
       selection: {
         master: selectedMaster(),
         resolution: selectedResolution(),
-        timeline: { on: timelineOn(), position: timelinePosition() },
+        timeline: timelineSelection(),
       },
       autoSave: document.querySelector("#auto-save").checked,
       eventId: document.querySelector("#event-id").value.trim(),
@@ -330,10 +333,12 @@ function render(state) {
   const master = selectedMaster();
   const note = document.querySelector("#choice-note");
   const labels = { overlay: "Overlay", preview: "Preview", soundtrack: "Soundtrack", overlayMask: "Overlay Mask", resolution: "Resolution" };
-  const timelineText = timelineOn() ? `Timeline Uploaded Video at the ${timelinePosition()}` : "";
+  const timeline = timelineSelection();
+  const timelinePlaces = [timeline.start ? "Start" : "", timeline.end ? "End" : ""].filter(Boolean);
+  const timelineText = timelinePlaces.length ? `Timeline ${timelinePlaces.join(" and ")}` : "";
   if (!selectedGroups().length) {
     note.textContent = "Check Paparazzi, Slo Mo Only, or both.";
-  } else if (!master.length && !timelineOn()) {
+  } else if (!master.length && !timelinePlaces.length) {
     note.textContent = "Check Overlay, Soundtrack, or the Timeline uploaded video.";
   } else if (!ready) {
     note.textContent = "Choose the file for each checked item. Recorded timeline clips stay as they are.";
@@ -343,6 +348,16 @@ function render(state) {
     note.textContent = `Changes ${changing} on ${groupText}. Poster order does not matter.`;
   }
   updateAll.textContent = chosenCount === 18 ? "Update All 18 Overlays" : chosenCount ? `Update ${chosenCount} templates` : "Update templates";
+  const templateNote = document.querySelector("#template-note");
+  const hasProgress = (state.templates || []).some((template) => template.status === "saved" || template.status === "failed");
+  const hasRemaining = (state.templates || []).some((template) => (template.status === "failed" || template.status === "pending") && groupsOn[template.group] !== false);
+  templateNote.textContent = hasProgress && hasRemaining
+    ? "Click a template that is not done to continue from there. Done templates stay as they are."
+    : "Uncheck a group to leave it alone.";
+  const failNotice = document.querySelector("#fail-notice");
+  const failed = (state.templates || []).filter((template) => template.status === "failed" || template.status === "missing");
+  failNotice.hidden = failed.length === 0;
+  failNotice.textContent = failed.map((template) => `${template.name} failed. ${failureReason(template)}`).join(" ");
   const licensed = Boolean(state.license?.active);
   const keyInput = document.querySelector("#license-key");
   document.querySelector("#license-status").textContent = state.license?.message || "Paste the key from the checkout page. It works on this computer only.";
@@ -390,10 +405,20 @@ function render(state) {
       const word = document.createElement("span");
       word.className = "pill-word";
       word.textContent = pillWord(status);
-      const pill = document.createElement("span");
-      pill.className = `pill ${status}`;
+      const resume = canResume(state, item, status);
+      const pill = document.createElement(resume ? "button" : "span");
+      pill.className = `pill ${status}${resume ? " resume" : ""}`;
       pill.textContent = String(item.seconds);
-      pill.title = `${item.name}: ${word.textContent || "waiting"}`;
+      const failedReason = status === "failed" || status === "missing" ? failureReason(item) : "";
+      pill.title = failedReason
+        ? `${item.name} failed. ${failedReason}`
+        : resume
+          ? `Continue from ${item.name}. Done templates stay as they are.`
+          : `${item.name}: ${word.textContent || "waiting"}`;
+      if (resume) {
+        pill.type = "button";
+        pill.addEventListener("click", () => start("update-all", item.name));
+      }
       slot.append(word, pill);
       pills.append(slot);
     }
@@ -411,6 +436,18 @@ function render(state) {
     item.append(time, document.createTextNode(entry.line));
     log.append(item);
   }
+}
+
+function failureReason(template) {
+  const detail = String(template.detail || "").replace(/\s+/g, " ").trim();
+  return detail || "The template did not finish.";
+}
+
+function canResume(state, item, status) {
+  if (state.running || !state.license?.active || !readyToUpdate()) return false;
+  if (groupsOn[item.group] === false) return false;
+  if (status !== "failed" && status !== "pending") return false;
+  return (state.templates || []).some((template) => template.status === "saved" || template.status === "failed");
 }
 
 function pillWord(status) {
