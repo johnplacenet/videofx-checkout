@@ -1,3 +1,9 @@
 node_modules/
 .env
 checkout-data/
+downloads/
+app/node_modules/
+app/.node/
+app/.npm-cache/
+app/.chrome-profile/
+app/uploads/

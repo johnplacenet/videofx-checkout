@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GlamBotMiami.com • VideoFX Builder AUTOMATOR</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="app-bar">
+    <div class="app-bar-inner">
+      <div class="app-bar-title">
+        <h1>GlamBotMiami.com • <span class="name-rest">VideoFX Builder AUTOMATOR</span></h1>
+        <strong id="progress-count">0 / 18</strong>
+      </div>
+      <div class="license-row">
+        <label class="license-field">Activation key <input id="license-key" autocomplete="off" spellcheck="false"></label>
+        <button id="activate" class="secondary" type="button">Activate this computer</button>
+        <button id="release" class="secondary" type="button">Use on another computer</button>
+        <p id="license-status">Paste the key from the checkout page. It works on this computer only.</p>
+        <a href="https://videofx.thecre8iveplace.com">Buy a $50 key</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="top-row">
+    <section class="panel step">
+      <h2><span class="step-num">1</span> Log in</h2>
+      <p class="meta">Opens the Snappic sign-in page.</p>
+      <button id="open-login" class="secondary" type="button">Log in to Snappic</button>
+    </section>
+
+    <section class="panel event-card">
+      <h2><span class="step-num">2</span> Check templates</h2>
+      <p class="meta">Get my event ID from the open event, or type it. Blank opens the events list.</p>
+      <div class="event-row">
+        <label class="event-field">Event ID <input id="event-id" inputmode="numeric" autocomplete="off" spellcheck="false"></label>
+        <button id="read-event" class="secondary" type="button">Get my event ID</button>
+        <button id="dry-run" class="secondary" type="button">Check templates</button>
+      </div>
+      <p id="event-link" class="path"></p>
+    </section>
+    </div>
+
+    <section class="progress-card">
+      <div class="bar" id="progress-track"><span id="progress-bar"></span></div>
+      <p id="message" class="activity"><span id="pulse" class="pulse" hidden></span><span id="activity-text">Idle</span><span id="elapsed" class="elapsed" hidden></span><span id="file-dot" class="dot"></span></p>
+      <p id="file-status" class="meta"></p>
+      <p id="file-path" class="path" hidden></p>
+      <p id="file-meta" class="meta" hidden></p>
+    </section>
+
+    <section class="board">
+      <section class="panel">
+        <h2>Templates</h2>
+        <div id="templates"></div>
+        <p class="meta">Uncheck a group to leave it alone.</p>
+      </section>
+      <section class="panel choices">
+        <h2>Master Settings</h2>
+        <div class="choice-list primary-choices">
+          <div class="choice-block main checked" data-choice="overlay">
+            <label class="check"><input type="checkbox" data-page="master" value="overlay" checked> Overlay</label>
+            <button class="file-pick" type="button" data-choose="overlay">Choose file</button>
+            <span data-chosen="overlay"></span>
+            <p class="file-note">.png or .apng or .mp4 less than 30 MB</p>
+          </div>
+          <div class="choice-block main" data-choice="soundtrack">
+            <label class="check"><input type="checkbox" data-page="master" value="soundtrack"> Soundtrack</label>
+            <button class="file-pick" type="button" data-choose="soundtrack">Choose file</button>
+            <span data-chosen="soundtrack"></span>
+            <p class="file-note">.mp3 or .m4a less than 5 MB</p>
+          </div>
+        </div>
+        <p class="meta other-label">Other settings</p>
+        <div class="choice-list">
+          <div class="choice-block" data-choice="preview">
+            <label class="check"><input type="checkbox" data-page="master" value="preview"> Preview</label>
+            <button class="file-pick" type="button" data-choose="preview">Choose file</button>
+            <span data-chosen="preview"></span>
+            <p class="file-note">.mp4 less than 5 MB</p>
+          </div>
+          <div class="choice-block" data-choice="overlayMask">
+            <label class="check"><input type="checkbox" data-page="master" value="overlayMask"> Overlay Mask</label>
+            <button class="file-pick" type="button" data-choose="overlayMask">Choose file</button>
+            <span data-chosen="overlayMask"></span>
+            <p class="file-note">.png or .apng or .jpeg or .jpg or .mp4 less than 10 MB</p>
+          </div>
+          <div class="choice-block" data-choice="resolution">
+            <label class="check"><input type="checkbox" data-page="master" value="resolution"> Resolution</label>
+            <div class="sizes">
+              <div><strong>Square</strong><label><input type="radio" name="resolution" value="square|1280x1280"> 1280x1280</label><label><input type="radio" name="resolution" value="square|1080x1080"> 1080x1080</label><label><input type="radio" name="resolution" value="square|720x720"> 720x720</label></div>
+              <div><strong>Landscape</strong><label><input type="radio" name="resolution" value="landscape|1920x1080"> 1920x1080</label><label><input type="radio" name="resolution" value="landscape|1280x960"> 1280x960</label><label><input type="radio" name="resolution" value="landscape|1280x720"> 1280x720</label><label><input type="radio" name="resolution" value="landscape|1080x608"> 1080x608</label></div>
+              <div><strong>Portrait</strong><label><input type="radio" name="resolution" value="portrait|1080x1920"> 1080x1920</label><label><input type="radio" name="resolution" value="portrait|1080x1350"> 1080x1350</label><label><input type="radio" name="resolution" value="portrait|960x1280"> 960x1280</label><label><input type="radio" name="resolution" value="portrait|720x1280"> 720x1280</label></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="panel timeline-card">
+        <h2>Timeline</h2>
+        <div class="choice-block" data-choice="timelineVideo">
+          <label class="check"><input type="checkbox" data-page="timeline" value="timelineVideo"> Uploaded Video</label>
+          <button class="file-pick" type="button" data-choose="timelineVideo">Choose file</button>
+          <span data-chosen="timelineVideo"></span>
+          <p class="file-note">.mp4 less than 30MiB</p>
+          <div class="timeline-where">
+            <label><input type="radio" name="timeline-position" value="end" checked> End</label>
+            <label><input type="radio" name="timeline-position" value="start"> Start</label>
+          </div>
+        </div>
+        <p class="meta">Replaces the end or the start clip. Recorded clips stay as they are.</p>
+      </section>
+    </section>
+
+    <section class="panel step finish">
+      <h2><span class="step-num">3</span> Update the templates</h2>
+      <p id="choice-note" class="meta"></p>
+      <label class="auto-save"><input id="auto-save" type="checkbox" checked> Save changes automatically when the update finishes</label>
+      <div class="actions">
+        <button id="update-all" class="primary" type="button">Update All 18 Overlays</button>
+        <button id="stop" class="secondary" type="button" hidden>Stop after this template</button>
+      </div>
+    </section>
+
+    <section id="save-notice" class="save-notice" hidden>
+      <p class="label" id="save-notice-label">Not saved to the event</p>
+      <h2 id="save-notice-title">Press Save changes</h2>
+      <p id="save-notice-text">Saving inside a template is not enough. Press Save changes on the template list, or the updates revert.</p>
+      <button id="save-event" class="primary" type="button">Save changes</button>
+    </section>
+
+    <details class="log-wrap">
+      <summary>Log</summary>
+      <ol id="log"></ol>
+    </details>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

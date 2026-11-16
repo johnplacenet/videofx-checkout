@@ -1,9 +1,11 @@
 import crypto from "node:crypto";
 import { execFile } from "node:child_process";
+import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Stripe from "stripe";
+import { buildDownloads, downloadZipPath } from "../../scripts/build-downloads.js";
 import { openDatabase, openStore } from "./store.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -112,6 +114,9 @@ function page({ title, body, wide = false, document = "License" }) {
     .error { color: #9b2c2c; }
     .save { margin: 0 0 14px; padding: 12px 14px; background: #f4f8f5; color: #1d6b45; font-weight: 650; }
     a { color: #10233f; }
+    h2.download-title { margin: 0 0 8px; font-size: 22px; }
+    .downloads { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 18px; }
+    .downloads a { display: block; text-align: center; text-decoration: none; background: #10233f; color: #fff; font-weight: 700; padding: 14px 12px; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e7ebf0; vertical-align: top; }
     th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #5c6b7a; }
@@ -119,6 +124,7 @@ function page({ title, body, wide = false, document = "License" }) {
       .letterhead-inner { align-items: flex-start; flex-direction: column; }
       main { margin-left: 12px; margin-right: 12px; padding: 24px 18px 20px; }
       .key { font-size: 18px; }
+      .downloads { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -180,9 +186,15 @@ function successPage(record, preview) {
         <p class="code-label">Activation code</p>
         <p class="key">${escapeHtml(record.key)}</p>
       </div>
+      <h2 class="download-title">Download the app</h2>
+      <p>Install it on the Mac or Windows computer that will use this code. Google Chrome needs to be on that computer. The first time you open the app, leave its window open while it finishes setup.</p>
+      <div class="downloads">
+        <a href="/download/mac">Download for Mac</a>
+        <a href="/download/windows">Download for Windows</a>
+      </div>
       <ol class="steps">
         <li><span>1</span><div><strong>Save this code.</strong> Take a photo or a screenshot before you leave this page.</div></li>
-        <li><span>2</span><div><strong>Activate one computer.</strong> Paste the code into Activation in the app.</div></li>
+        <li><span>2</span><div><strong>Open the app on one computer.</strong> On a Mac, unzip and open Start VideoFX. If macOS blocks it, right-click that file and choose Open. On Windows, unzip and open Start VideoFX. Then paste this code into Activation.</div></li>
         <li><span>3</span><div><strong>Moving computers.</strong> Free the code first at <a href="/move">Move to another computer</a>, then activate the next one.</div></li>
       </ol>
       ${preview ? `<p class="note">This sample code does not activate a computer.</p>` : ""}`,
@@ -480,12 +492,26 @@ const server = http.createServer(async (request, response) => {
       });
       return sendJson(response, result.ok ? 200 : result.status, result);
     }
+    if (url.pathname === "/download/mac" || url.pathname === "/download/windows") {
+      const fileName = url.pathname.endsWith("/mac") ? "VideoFX-Mac.zip" : "VideoFX-Windows.zip";
+      if (!fs.existsSync(downloadZipPath)) buildDownloads();
+      if (!fs.existsSync(downloadZipPath)) return sendHtml(response, 404, messagePage("Download unavailable", "The app download is not ready yet."));
+      response.writeHead(200, {
+        "content-type": "application/zip",
+        "content-disposition": `attachment; filename="${fileName}"`,
+        "cache-control": "no-store",
+      });
+      fs.createReadStream(downloadZipPath).pipe(response);
+      return;
+    }
     if (url.pathname === "/health") return sendJson(response, 200, { ok: true });
     sendJson(response, 404, { error: "Not found" });
   } catch (error) {
     sendJson(response, error.statusCode || 500, { error: publicError(error) });
   }
 });
+
+buildDownloads();
 
 server.listen(port, host, () => {
   console.log(`VideoFX automator checkout: http://${host}:${port}`);

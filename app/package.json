@@ -1,0 +1,11 @@
+{
+  "name": "videofx-automator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "playwright": "^1.58.2"
+  }
+}

@@ -1,0 +1,19 @@
+VideoFX automator Platform
+The Creative Place LLC
+
+Google Chrome must be installed on this computer.
+
+Mac
+1. Unzip this folder.
+2. Double-click "Start VideoFX.command".
+3. If macOS says it cannot be opened, right-click that file and choose Open.
+4. Leave the window open. The first open can take a few minutes.
+5. Paste your activation code into Activation.
+
+Windows
+1. Unzip this folder.
+2. Double-click "Start VideoFX.bat".
+3. Leave the window open. The first open can take a few minutes.
+4. Paste your activation code into Activation.
+
+The code works on one computer. To move it, free the code first, then activate the next computer.
