@@ -117,6 +117,10 @@ function page({ title, body, wide = false, document = "License" }) {
     h2.download-title { margin: 0 0 8px; font-size: 22px; }
     .downloads { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 18px; }
     .downloads a { display: block; text-align: center; text-decoration: none; background: #10233f; color: #fff; font-weight: 700; padding: 14px 12px; }
+    .machine { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 16px; }
+    .machine img { width: 100%; height: 230px; object-fit: contain; background: #f7f8fa; border: 1px solid #e1e6ee; }
+    .only { margin: 0 0 16px; padding: 12px 14px; background: #f7f5f0; border-left: 4px solid #b0893e; }
+    .only strong { display: block; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e7ebf0; vertical-align: top; }
     th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #5c6b7a; }
@@ -124,7 +128,8 @@ function page({ title, body, wide = false, document = "License" }) {
       .letterhead-inner { align-items: flex-start; flex-direction: column; }
       main { margin-left: 12px; margin-right: 12px; padding: 24px 18px 20px; }
       .key { font-size: 18px; }
-      .downloads { grid-template-columns: 1fr; }
+      .downloads, .machine { grid-template-columns: 1fr; }
+      .machine img { height: auto; }
     }
   </style>
 </head>
@@ -148,6 +153,11 @@ function homePage(canceled, test) {
     document: "Purchase",
     body: `
       <h1>VideoFX automator Platform</h1>
+      <div class="machine">
+        <img src="/photos/glambot-machine.png" alt="The GlamBot camera arm from GetGlamBot">
+        <img src="/photos/glambot-in-use.png" alt="A person operating a GlamBot camera arm">
+      </div>
+      <p class="only"><strong>Only for a GetGlamBot owner.</strong> This is only for someone who owns a GlamBot from <a href="https://getglambot.com">getglambot.com</a> and already has the Snappic templates designed for GetGlamBot. This is that machine.</p>
       <p class="price">${price}</p>
       <p>One computer. The activation key cannot be shared.</p>
       <p class="note">${test ? "Test charge. The real price stays $50." : "Pay with card. The next page shows your code. Take a photo or a screenshot so you can save it."}</p>
@@ -366,7 +376,7 @@ async function createCheckout(request) {
           name: "VideoFX automator Platform",
           description: test
             ? "Test purchase from The Creative Place LLC. One computer."
-            : "Sold by The Creative Place LLC. One computer. The activation code cannot be shared.",
+            : "Only for a GetGlamBot owner who already has the Snappic GetGlamBot templates. Sold by The Creative Place LLC. One computer. The code cannot be shared.",
         },
       },
     }],
@@ -502,6 +512,14 @@ const server = http.createServer(async (request, response) => {
         "cache-control": "no-store",
       });
       fs.createReadStream(downloadZipPath).pipe(response);
+      return;
+    }
+    const photo = { "/photos/glambot-machine.png": "glambot-machine.png", "/photos/glambot-in-use.png": "glambot-in-use.png" }[url.pathname];
+    if (photo && request.method === "GET") {
+      const file = path.join(root, "public", "photos", photo);
+      if (!fs.existsSync(file)) return sendJson(response, 404, { error: "Not found" });
+      response.writeHead(200, { "content-type": "image/png", "cache-control": "public, max-age=86400" });
+      fs.createReadStream(file).pipe(response);
       return;
     }
     if (url.pathname === "/health") return sendJson(response, 200, { ok: true });
