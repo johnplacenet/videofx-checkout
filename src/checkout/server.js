@@ -121,6 +121,9 @@ function page({ title, body, wide = false, document = "License" }) {
     .machine img { width: 100%; height: 230px; object-fit: contain; background: #f7f8fa; border: 1px solid #e1e6ee; }
     .only { margin: 0 0 16px; padding: 12px 14px; background: #f7f5f0; border-left: 4px solid #b0893e; }
     .only strong { display: block; }
+    .app-shot { margin: 0 0 18px; }
+    .app-shot img { width: 100%; height: auto; display: block; border: 1px solid #e1e6ee; }
+    .app-shot p { margin: 8px 0 0; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e7ebf0; vertical-align: top; }
     th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #5c6b7a; }
@@ -151,6 +154,7 @@ function homePage(canceled, test) {
   return page({
     title: "VideoFX automator Platform",
     document: "Purchase",
+    wide: true,
     body: `
       <h1>VideoFX automator Platform</h1>
       <div class="machine">
@@ -158,6 +162,10 @@ function homePage(canceled, test) {
         <img src="/photos/glambot-in-use.png" alt="A person operating a GlamBot camera arm">
       </div>
       <p class="only"><strong>Only for a GetGlamBot owner.</strong> This is only for someone who owns a GlamBot from <a href="https://getglambot.com">getglambot.com</a> and already has the Snappic templates designed for GetGlamBot. This is that machine.</p>
+      <figure class="app-shot">
+        <img src="/photos/app.png" alt="The VideoFX automator app, with the template list, overlay, and timeline">
+        <p class="note">This is the app you are buying. It updates the Snappic templates on that GlamBot.</p>
+      </figure>
       <p class="price">${price}</p>
       <p>One computer. The activation key cannot be shared.</p>
       <p class="note">${test ? "Test charge. The real price stays $50." : "Pay with card. The next page shows your code. Take a photo or a screenshot so you can save it."}</p>
@@ -514,7 +522,11 @@ const server = http.createServer(async (request, response) => {
       fs.createReadStream(downloadZipPath).pipe(response);
       return;
     }
-    const photo = { "/photos/glambot-machine.png": "glambot-machine.png", "/photos/glambot-in-use.png": "glambot-in-use.png" }[url.pathname];
+    const photo = {
+      "/photos/glambot-machine.png": "glambot-machine.png",
+      "/photos/glambot-in-use.png": "glambot-in-use.png",
+      "/photos/app.png": "app.png",
+    }[url.pathname];
     if (photo && request.method === "GET") {
       const file = path.join(root, "public", "photos", photo);
       if (!fs.existsSync(file)) return sendJson(response, 404, { error: "Not found" });
