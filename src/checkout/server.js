@@ -149,7 +149,7 @@ function page({ title, body, wide = false, document = "License" }) {
 }
 
 function homePage(canceled, test) {
-  const price = test ? "$1" : "$50";
+  const price = test ? "$1" : "$69";
   const endpoint = test ? "/api/checkout?test=1" : "/api/checkout";
   return `<!DOCTYPE html>
 <html lang="en">
@@ -203,6 +203,8 @@ function homePage(canceled, test) {
     .split .rule, .purchase .rule { margin-left: 0; }
     .only { padding: 16px 18px; background: #f8f1e3; border-left: 4px solid #c6a15b; border-radius: 8px; }
     .only strong { display: block; }
+    .final { margin: 0 0 18px; padding: 14px 16px; background: #fbf6ee; border: 1px solid #e4d3a8; border-left: 4px solid #9a7433; color: #3d3424; font-size: 15px; }
+    .final strong { display: block; color: #142033; }
     .steps { display: grid; gap: 16px; }
     .step { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: start; }
     .step .mark { background: #0e1c33; color: #f4efe4; }
@@ -337,12 +339,14 @@ function homePage(canceled, test) {
     </div>
   </section>
   <section id="purchase" class="band">
-    <div class="wrap purchase-grid">
+    <div class="wrap">
+    <p class="final"><strong>All sales are final.</strong> This is digital media. Once you pay and receive your activation key, there are no refunds. Before you pay, make sure you have the correct GlamBot and the Snappic templates already supplied for GetGlamBot. If you do not have those, you will not get a refund.</p>
+    <div class="purchase-grid">
       <div class="price-card">
         <h2>Get the VideoFX automator Platform</h2>
         <p class="price">${price}</p>
         <p>One computer. One-time purchase from The Creative Place LLC. The activation key cannot be shared. You can free it when you move to another computer.</p>
-        <p>${test ? "Test charge. The real price stays $50." : "Pay with card. The next page shows your code. Take a photo or a screenshot so you can save it."}</p>
+        <p>${test ? "Test charge. The real price stays $69." : "Pay with card. The next page shows your code. Take a photo or a screenshot so you can save it."}</p>
         ${canceled ? `<p class="error">Payment was canceled. Nothing was charged.</p>` : ""}
         <p class="error" id="error" hidden></p>
         <button class="pay wide" type="button">Pay ${price}</button>
@@ -351,12 +355,16 @@ function homePage(canceled, test) {
         <h2>FAQ</h2>
         <div class="rule"></div>
         <details open>
+          <summary>Are there refunds?</summary>
+          <p>No. All sales are final. This is digital media. Once you pay and your activation key is shown, there are no refunds. Make sure you have the correct GlamBot and the templates already supplied for it before you pay. If you do not have those, you will not get a refund.</p>
+        </details>
+        <details>
           <summary>Do I need a GetGlamBot and the Snappic templates?</summary>
-          <p>Yes. This is only for a GlamBot from getglambot.com, and only if you already have the Snappic templates designed for GetGlamBot.</p>
+          <p>Yes. This is only for a GlamBot from getglambot.com, and only if you already have the Snappic templates designed for GetGlamBot. Without those, the app has nothing to update, and the sale is still final.</p>
         </details>
         <details>
           <summary>Is this a subscription?</summary>
-          <p>No. It is a one-time ${test ? "$1 test charge. The real price stays $50." : "$50 purchase"}.</p>
+          <p>No. It is a one-time ${test ? "$1 test charge. The real price stays $69." : "$69 purchase"}.</p>
         </details>
         <details>
           <summary>Can I use my own files?</summary>
@@ -375,6 +383,7 @@ function homePage(canceled, test) {
           <p>No. It updates the video templates. Event details, options, sharing, effects, and the app experience stay as you set them.</p>
         </details>
       </div>
+    </div>
     </div>
   </section>
   <footer class="foot">
@@ -594,12 +603,12 @@ async function createCheckout(request) {
       quantity: 1,
       price_data: {
         currency: "usd",
-        unit_amount: test ? 100 : 5000,
+        unit_amount: test ? 100 : 6900,
         product_data: {
           name: "VideoFX automator Platform",
           description: test
             ? "Test purchase from The Creative Place LLC. One computer."
-            : "Upload the overlay, soundtrack, or start and end video once. It changes all 18 GetGlamBot templates. One computer. The code cannot be shared.",
+            : "Upload the overlay, soundtrack, or start and end video once. It changes all 18 GetGlamBot templates. One computer. All sales are final. No refunds.",
         },
       },
     }],
