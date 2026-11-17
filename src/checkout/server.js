@@ -114,6 +114,7 @@ function page({ title, body, wide = false, document = "License" }) {
     .error { color: #9b2c2c; }
     .save { margin: 0 0 14px; padding: 12px 14px; background: #f4f8f5; color: #1d6b45; font-weight: 650; }
     a { color: #10233f; }
+    .indie { max-width: ${width}; margin: -28px auto 36px; padding: 0 8px; color: #5c6b7a; font-size: 13px; }
     h2.download-title { margin: 0 0 8px; font-size: 22px; }
     .downloads { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 18px; }
     .downloads a { display: block; text-align: center; text-decoration: none; background: #10233f; color: #fff; font-weight: 700; padding: 14px 12px; }
@@ -144,6 +145,7 @@ function page({ title, body, wide = false, document = "License" }) {
     </div>
   </header>
   <main>${body}</main>
+  <p class="indie">VideoFX automator is an independent project. It is not affiliated with GetGlamBot or Snappic. Questions, suggestions, or bugs: <a href="mailto:johnplacenet@gmail.com">johnplacenet@gmail.com</a></p>
 </body>
 </html>`;
 }
@@ -223,6 +225,8 @@ function homePage(canceled, test) {
     .foot-inner { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
     .foot p { margin: 0; }
     .foot strong { color: #e8d7b0; }
+    .foot .indie { margin: 16px auto 0; color: #d7deea; font-size: 14px; }
+    .foot .indie a { color: #e8d7b0; }
     @media (max-width: 980px) {
       h1 { font-size: 36px; }
       .reasons { grid-template-columns: 1fr 1fr; }
@@ -379,6 +383,10 @@ function homePage(canceled, test) {
           <p>Yes. The Mac and Windows downloads are on the page with your code. That computer needs Google Chrome.</p>
         </details>
         <details>
+          <summary>Is this part of GetGlamBot or Snappic?</summary>
+          <p>No. VideoFX automator is an independent project. It is not affiliated with GetGlamBot or Snappic. Questions, suggestions, or bugs: <a href="mailto:johnplacenet@gmail.com">johnplacenet@gmail.com</a></p>
+        </details>
+        <details>
           <summary>Does it change the rest of the Snappic event?</summary>
           <p>No. It updates the video templates. Event details, options, sharing, effects, and the app experience stay as you set them.</p>
         </details>
@@ -391,6 +399,7 @@ function homePage(canceled, test) {
       <p><strong>Stop opening all 18 templates for one small change.</strong><br>Upload the files once. The app changes every template.</p>
       <button class="pay" type="button">Get access for ${price}</button>
     </div>
+    <p class="indie wrap">VideoFX automator is an independent project. It is not affiliated with GetGlamBot or Snappic. Questions, suggestions, or bugs: <a href="mailto:johnplacenet@gmail.com">johnplacenet@gmail.com</a></p>
   </footer>
   <script>
     document.querySelectorAll(".pay").forEach((button) => {
