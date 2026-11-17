@@ -159,6 +159,21 @@ function homePage(canceled, test) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VideoFX automator Platform</title>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="The Creative Place LLC">
+  <meta property="og:url" content="https://videofx.thecre8iveplace.com/">
+  <meta property="og:title" content="VideoFX automator — Update all 18 templates at once">
+  <meta property="og:description" content="Upload the overlay, soundtrack, or start and end video once. It changes all 18 GetGlamBot templates. $69. One computer.">
+  <meta property="og:image" content="https://videofx.thecre8iveplace.com/photos/videofx-share.jpg">
+  <meta property="og:image:secure_url" content="https://videofx.thecre8iveplace.com/photos/videofx-share.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="535">
+  <meta property="og:image:alt" content="VideoFX automator. Update all 18 templates at once. $69.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VideoFX automator — Update all 18 templates at once">
+  <meta name="twitter:description" content="Upload the overlay, soundtrack, or start and end video once. It changes all 18 GetGlamBot templates. $69. One computer.">
+  <meta name="twitter:image" content="https://videofx.thecre8iveplace.com/photos/videofx-share.jpg">
   <style>
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -756,14 +771,15 @@ const server = http.createServer(async (request, response) => {
       return;
     }
     const photo = {
-      "/photos/glambot-machine.png": "glambot-machine.png",
-      "/photos/glambot-in-use.png": "glambot-in-use.png",
-      "/photos/app.png": "app.png",
+      "/photos/glambot-machine.png": ["glambot-machine.png", "image/png"],
+      "/photos/glambot-in-use.png": ["glambot-in-use.png", "image/png"],
+      "/photos/app.png": ["app.png", "image/png"],
+      "/photos/videofx-share.jpg": ["videofx-share.jpg", "image/jpeg"],
     }[url.pathname];
     if (photo && request.method === "GET") {
-      const file = path.join(root, "public", "photos", photo);
+      const file = path.join(root, "public", "photos", photo[0]);
       if (!fs.existsSync(file)) return sendJson(response, 404, { error: "Not found" });
-      response.writeHead(200, { "content-type": "image/png", "cache-control": "public, max-age=86400" });
+      response.writeHead(200, { "content-type": photo[1], "cache-control": "public, max-age=86400" });
       fs.createReadStream(file).pipe(response);
       return;
     }
