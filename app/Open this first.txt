@@ -17,3 +17,5 @@ Windows
 4. Paste your activation code into Activation.
 
 The code works on one computer. To move it, free the code first, then activate the next computer.
+
+Read "How to use it.txt" in this folder before the first event. The same steps are under Instructions in the app.

@@ -4,6 +4,9 @@ const openLogin = document.querySelector("#open-login");
 const stop = document.querySelector("#stop");
 const saveEvent = document.querySelector("#save-event");
 const templates = document.querySelector("#templates");
+const instructions = document.querySelector("#instructions");
+const instructionsDialog = document.querySelector("#instructions-dialog");
+instructions.addEventListener("click", () => instructionsDialog.showModal());
 
 updateAll.addEventListener("click", () => start("update-all"));
 dryRun.addEventListener("click", () => start("dry-run"));

@@ -1,0 +1,32 @@
+How to use VideoFX automator
+The Creative Place LLC
+
+1. Open the software.
+   On a Mac, unzip this folder and open Start VideoFX. On Windows, unzip and open Start VideoFX. Leave that window open the first time. If this computer is not activated yet, paste your activation code.
+
+2. Click 1, Log in to Snappic.
+   It opens the Snappic sign-in page. Enter your Snappic username and password there.
+
+3. In Snappic, open your event.
+   Select Events and open the event you are working on.
+
+4. Come back to the automator and click Get my event ID.
+   Wait until the event ID fills in.
+
+5. Click Check templates.
+   It opens the templates page and looks for all 18: Paparazzi and Slo Mo Only, from 10 seconds down to 2. Each one turns green and says done when it is there. A missing template turns red and says failed.
+
+6. Under Master Settings, upload what you are changing.
+   Overlay and Soundtrack are the two most people change. Upload those.
+   Preview, Overlay Mask, and Resolution can be changed here too. Most people leave those the same for every event.
+
+7. Timeline, only if you use one.
+   If the final video already has a clip at the end, check End and upload that file. If it has a clip at the start, check Start and upload that file. You can check both. Recorded clips stay as they are.
+
+8. Click 3, Update the templates, then Update All 18 Overlays.
+   Leave “Save changes automatically when the update finishes” checked. This usually takes about 4 or 5 minutes. When it finishes, you are done.
+
+If one template fails, the app tells you why. Click a number that is not done to continue. You do not have to start over.
+
+This is an independent project. It is not affiliated with GetGlamBot or Snappic.
+Questions, suggestions, or bugs: johnplacenet@gmail.com

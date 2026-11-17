@@ -11,7 +11,10 @@
     <div class="app-bar-inner">
       <div class="app-bar-title">
         <h1>GlamBotMiami.com • <span class="name-rest">VideoFX Builder AUTOMATOR</span></h1>
-        <strong id="progress-count">0 / 18</strong>
+        <div class="app-bar-actions">
+          <button id="instructions" class="secondary" type="button">Instructions</button>
+          <strong id="progress-count">0 / 18</strong>
+        </div>
       </div>
       <div class="license-row">
         <label class="license-field">Activation key <input id="license-key" autocomplete="off" spellcheck="false"></label>
@@ -22,6 +25,21 @@
       </div>
     </div>
   </header>
+  <dialog id="instructions-dialog" class="instructions">
+    <h2>How to use it</h2>
+    <ol>
+      <li><strong>Open the software.</strong> Paste your activation code if this computer is not activated yet.</li>
+      <li><strong>Click 1, Log in to Snappic.</strong> It opens the Snappic sign-in page. Enter your Snappic username and password there.</li>
+      <li><strong>In Snappic, open your event.</strong> Select Events and open the event you are working on.</li>
+      <li><strong>Come back here and click Get my event ID.</strong> Wait until the event ID fills in.</li>
+      <li><strong>Click Check templates.</strong> It looks for all 18: Paparazzi and Slo Mo Only, from 10 seconds down to 2. Each one turns green and says done when it is there. A missing template turns red and says failed.</li>
+      <li><strong>Under Master Settings, upload what you are changing.</strong> Overlay and Soundtrack are the two most people change. Preview, Overlay Mask, and Resolution can be changed here too. Most people leave those the same for every event.</li>
+      <li><strong>Timeline, only if you use one.</strong> If the final video already has a clip at the end, check End and upload that file. If it has a clip at the start, check Start and upload that file. You can check both. Recorded clips stay as they are.</li>
+      <li><strong>Click 3, Update the templates, then Update All 18 Overlays.</strong> Leave “Save changes automatically when the update finishes” checked. This usually takes about 4 or 5 minutes. When it finishes, you are done.</li>
+    </ol>
+    <p>If one template fails, the app tells you why. Click a number that is not done to continue. You do not have to start over.</p>
+    <form method="dialog"><button class="primary" type="submit">Close</button></form>
+  </dialog>
   <main>
     <div class="top-row">
     <section class="panel step">
