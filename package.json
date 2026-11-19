@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node src/checkout/server.js"
+    "start": "node src/checkout/server.js",
+    "test": "node --test"
   },
   "dependencies": {
     "pg": "^8.23.1",

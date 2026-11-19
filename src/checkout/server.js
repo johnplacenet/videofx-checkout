@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Stripe from "stripe";
 import { buildDownloads, downloadZipPath } from "../../scripts/build-downloads.js";
+import { sendPurchaseNotice } from "./mail.js";
 import { openDatabase, openStore } from "./store.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -662,7 +663,16 @@ async function loadSession(sessionId) {
 
 async function fulfillSession(session) {
   if (!session || (session.payment_status !== "paid" && session.payment_status !== "no_payment_required")) return null;
-  return store.issueLicense({ sessionId: session.id, email: buyerEmail(session) });
+  if (session.metadata?.product !== "videofx_automator") return null;
+  const record = await store.issueLicense({ sessionId: session.id, email: buyerEmail(session) });
+  if (record && await store.claimNotify(session.id)) {
+    const result = await sendPurchaseNotice(session, record);
+    if (!result.sent) {
+      await store.releaseNotify(session.id);
+      console.error(`Purchase email was not sent (${result.reason}).`);
+    }
+  }
+  return record;
 }
 
 const server = http.createServer(async (request, response) => {

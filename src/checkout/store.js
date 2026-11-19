@@ -55,6 +55,25 @@ export function openStore(dir) {
       return record;
     },
 
+    claimNotify(sessionId) {
+      const id = String(sessionId || "").trim();
+      const licenses = read();
+      const record = licenses.find((item) => item.sessionId === id);
+      if (!record || record.notifiedAt) return false;
+      record.notifiedAt = new Date().toISOString();
+      write(licenses);
+      return true;
+    },
+
+    releaseNotify(sessionId) {
+      const id = String(sessionId || "").trim();
+      const licenses = read();
+      const record = licenses.find((item) => item.sessionId === id);
+      if (!record) return;
+      record.notifiedAt = "";
+      write(licenses);
+    },
+
     list() {
       return read().map((record) => ({
         email: record.email || "",
@@ -156,6 +175,7 @@ export async function openDatabase(connectionString) {
     disabled boolean NOT NULL DEFAULT false
   )`);
   await pool.query(`ALTER TABLE licenses ADD COLUMN IF NOT EXISTS disabled boolean NOT NULL DEFAULT false`);
+  await pool.query(`ALTER TABLE licenses ADD COLUMN IF NOT EXISTS notified_at timestamptz`);
 
   return {
     async issueLicense({ sessionId, email }) {
@@ -175,6 +195,20 @@ export async function openDatabase(connectionString) {
         [id],
       );
       return rowToRecord(existing.rows[0]);
+    },
+
+    async claimNotify(sessionId) {
+      const id = String(sessionId || "").trim();
+      const result = await pool.query(
+        `UPDATE licenses SET notified_at = now() WHERE session_id = $1 AND notified_at IS NULL RETURNING session_id`,
+        [id],
+      );
+      return result.rowCount > 0;
+    },
+
+    async releaseNotify(sessionId) {
+      const id = String(sessionId || "").trim();
+      await pool.query(`UPDATE licenses SET notified_at = NULL WHERE session_id = $1`, [id]);
     },
 
     async list() {
