@@ -637,6 +637,8 @@ async function createCheckout(request) {
         },
       },
     }],
+    billing_address_collection: "required",
+    phone_number_collection: { enabled: true },
     success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}${test ? "/test" : "/"}?canceled=1`,
     payment_intent_data: { statement_descriptor_suffix: "VIDEO FX" },
@@ -661,12 +663,26 @@ async function loadSession(sessionId) {
   return stripeCli("get", `/v1/checkout/sessions/${sessionId}`);
 }
 
+async function withPaymentMethod(session) {
+  const paymentIntentId = typeof session?.payment_intent === "string" ? session.payment_intent : session?.payment_intent?.id;
+  const stripe = stripeClient();
+  if (!paymentIntentId || !stripe || session?.payment_method?.type) return session;
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId, { expand: ["payment_method"] });
+    if (!intent.payment_method || typeof intent.payment_method === "string") return session;
+    return { ...session, payment_method: intent.payment_method };
+  } catch (error) {
+    console.error(`Purchase email could not load the payment method (${publicError(error)}).`);
+    return session;
+  }
+}
+
 async function fulfillSession(session) {
   if (!session || (session.payment_status !== "paid" && session.payment_status !== "no_payment_required")) return null;
   if (session.metadata?.product !== "videofx_automator") return null;
   const record = await store.issueLicense({ sessionId: session.id, email: buyerEmail(session) });
   if (record && await store.claimNotify(session.id)) {
-    const result = await sendPurchaseNotice(session, record);
+    const result = await sendPurchaseNotice(await withPaymentMethod(session), record);
     if (!result.sent) {
       await store.releaseNotify(session.id);
       console.error(`Purchase email was not sent (${result.reason}).`);
